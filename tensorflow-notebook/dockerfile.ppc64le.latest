@@ -1,0 +1,24 @@
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+ARG BASE_CONTAINER=brlee/jupyter:scipy-notebook
+FROM $BASE_CONTAINER
+
+LABEL maintainer="Jupyter Project <jupyter@googlegroups.com>"
+
+ENV IBM_POWERAI_LICENSE_ACCEPT yes
+
+# Install Tensorflow
+RUN conda config --prepend channels https://public.dhe.ibm.com/ibmdl/export/pub/software/server/ibm-ai/conda/ && \
+    conda create --quiet --yes --name py36 python=3.6 && \
+    conda init bash
+
+#RUN /bin/bash -c ". activate py36" && \
+RUN . /opt/conda/etc/profile.d/conda.sh && \
+    conda activate py36 && \
+    conda env list && \
+    conda config --show channels && \
+#    conda install --yes tensorflow && \
+    conda install --yes tensorflow- && \
+    conda clean --all -f -y && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
